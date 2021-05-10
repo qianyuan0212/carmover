@@ -1,4 +1,4 @@
-import colors from 'vuetify/es5/util/colors'
+// import colors from 'vuetify/es5/util/colors'
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -29,6 +29,9 @@ export default {
   buildModules: [
     // https://go.nuxtjs.dev/eslint
     '@nuxtjs/eslint-module',
+
+    // https://go.nuxtjs.dev/tailwindcss
+    '@nuxtjs/tailwindcss',
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
   ],
