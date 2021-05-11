@@ -1,18 +1,10 @@
 <template>
   <v-bottom-sheet v-model="sheet" fullscreen>
     <template #activator="{ on, attrs }">
-      <slot name="activator" v-bind="{ on, attrs, value }">
-        <v-text-field
-          :rules="[]"
-          :value="value"
-          readonly
-          v-bind="attrs"
-          v-on="on"
-        ></v-text-field>
-      </slot>
+      <slot name="activator" v-bind="{ on, attrs, value }"> </slot>
     </template>
-    <v-sheet class="h-full overflow-auto">
-      <v-toolbar flat tile>
+    <v-sheet class="h-full">
+      <v-toolbar absolute flat tile class="w-full">
         <v-btn icon @click="close">
           <v-icon>mdi-window-close</v-icon>
         </v-btn>
@@ -24,30 +16,39 @@
           >确定</v-btn
         >
       </v-toolbar>
-      <v-form ref="form" v-model="valid" class="pa-5">
-        <slot v-bind="slotProps">
-          <v-textarea
-            v-if="textarea"
-            v-model="cloneValue"
-            v-bind="$attrs"
-            label=""
-          ></v-textarea>
+      <v-container class="h-full flex flex-col">
+        <v-form ref="form" v-model="valid" class="px-2 py-2 mt-20">
           <v-text-field
-            v-else
-            v-model="cloneValue"
-            v-bind="$attrs"
-            label=""
-            :type="type"
+            v-model="cloneValue.mobile"
+            label="手机号"
+            type="number"
+            :rules="mobileRules"
+            required
           ></v-text-field>
-        </slot>
-        <slot name="description">
-          <div
-            v-if="description"
-            class="pt-5 text-sm font-light grey--text text--darken-2"
-            v-html="description"
-          ></div>
-        </slot>
-      </v-form>
+          <v-text-field v-model="cloneValue.name" label="称呼">
+            <template #append>
+              <div class="pl-5" @click="toggleGender">
+                {{ cloneValue.gender }}
+              </div>
+            </template>
+          </v-text-field>
+        </v-form>
+        <v-spacer></v-spacer>
+        <div>
+          <template v-if="value.primary === false">
+            <v-divider></v-divider>
+            <v-btn block text large color="primary" @click="primaryHandler"
+              >设置为主号</v-btn
+            >
+          </template>
+          <template v-if="value.mobile">
+            <v-divider></v-divider>
+            <v-btn block text large color="error" @click="deleteHandler"
+              >删除</v-btn
+            >
+          </template>
+        </div>
+      </v-container>
     </v-sheet>
   </v-bottom-sheet>
 </template>
@@ -58,40 +59,28 @@ import cloneDeep from 'lodash/cloneDeep'
 export default {
   inheritAttrs: false,
   props: {
-    value: {},
-    type: {
-      type: String,
-      default: 'text',
-    },
-    textarea: {
-      type: Boolean,
-      default: false,
-    },
-    description: {
-      type: String,
-      default: '',
+    value: {
+      type: Object,
+      default() {
+        return {}
+      },
     },
   },
   data: () => ({
     sheet: false,
     valid: true,
-    cloneValue: undefined,
+    cloneValue: {},
+    mobileRules: [
+      (v) => !!v || '手机号不能为空',
+      (v) => (v && /^1[3-9]\d{9}$/.test(v)) || '请输入正确的手机号',
+    ],
   }),
-  computed: {
-    slotProps() {
-      return {
-        attrs: { ...this.$attrs, value: this.cloneValue },
-        on: { input: this.inputHandler },
-      }
-    },
-  },
   watch: {
     sheet(val) {
       if (val) {
-        if (typeof this.value === 'object') {
-          this.cloneValue = cloneDeep(this.value)
-        } else {
-          this.cloneValue = this.value
+        this.cloneValue = cloneDeep(this.value)
+        if (!this.cloneValue.gender) {
+          this.$set(this.cloneValue, 'gender', '先生')
         }
         if (this.$refs.form) {
           this.$refs.form.resetValidation()
@@ -101,6 +90,10 @@ export default {
     },
   },
   methods: {
+    toggleGender() {
+      this.cloneValue.gender =
+        this.cloneValue.gender === '先生' ? '女士' : '先生'
+    },
     close() {
       this.sheet = false
     },
@@ -112,6 +105,14 @@ export default {
     },
     inputHandler(e) {
       this.cloneValue = e
+    },
+    primaryHandler() {
+      this.$emit('setPrimary')
+      this.close()
+    },
+    deleteHandler() {
+      this.$emit('delete')
+      this.close()
     },
   },
 }

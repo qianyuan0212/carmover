@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar elevate-on-scroll fixed app color="white">
+  <v-app-bar fixed app dark color="primary">
     <v-spacer></v-spacer>
     <v-toolbar-title>Title</v-toolbar-title>
     <v-spacer></v-spacer>
