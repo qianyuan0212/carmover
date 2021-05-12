@@ -1,19 +1,14 @@
 <template>
   <v-app>
     <v-app-bar fixed app light dark color="primary">
-      <v-icon v-if="mobiles.length < 3" class="invisible">mdi-plus</v-icon>
-      <v-spacer></v-spacer>
+      <v-spacer class="ml-8"></v-spacer>
       <v-toolbar-title>
         <div class="text-base">我的联系方式</div>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <form-mobile-editor
-        v-if="mobiles.length < 3"
-        label="添加联系方式"
-        @input="add"
-      >
+      <form-mobile-editor label="添加联系方式" @input="add">
         <template #activator="{ on, attrs }">
-          <v-btn icon v-bind="attrs" v-on="on">
+          <v-btn icon :disabled="mobiles.length >= 3" v-bind="attrs" v-on="on">
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         </template>
