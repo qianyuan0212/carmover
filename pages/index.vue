@@ -1,72 +1,58 @@
 <template>
   <v-app>
     <v-app-bar fixed app light dark color="primary">
-      <v-spacer class="ml-8"></v-spacer>
+      <v-spacer :class="{ 'ml-12': mobiles.length }"></v-spacer>
       <v-toolbar-title>
         <div class="text-base">我的联系方式</div>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <form-mobile-editor label="添加联系方式" @input="add">
-        <template #activator="{ on, attrs }">
-          <v-btn icon :disabled="mobiles.length >= 3" v-bind="attrs" v-on="on">
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </template>
-      </form-mobile-editor>
+      <form-mobile-editor
+        v-if="mobiles.length"
+        :value="mobiles"
+        @change="save"
+      ></form-mobile-editor>
     </v-app-bar>
     <v-main>
-      <v-container class="h-full">
+      <v-container>
+        <v-list>
+          <template v-for="(item, index) in mobiles">
+            <v-list-item :key="item.mobile" :value="item" class="px-5 py-2">
+              <v-list-item-content>
+                <v-list-item-title class="primary--text">
+                  {{ item.name }}{{ item.gender }}
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ item.mobile }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action v-if="index === 0">
+                <v-list-item-action-text>主号码</v-list-item-action-text>
+              </v-list-item-action>
+            </v-list-item>
+            <v-divider :key="'divider' + index"></v-divider>
+          </template>
+        </v-list>
+
         <form-mobile-editor
-          v-for="(item, index) in mobiles"
-          :key="item.mobile"
-          :value="item"
-          label="修改联系方式"
-          @input="save($event, index)"
-          @setPrimary="setPrimary(index)"
-          @delete="deleteHandler(index)"
+          v-if="!mobiles.length"
+          :value="mobiles"
+          @change="save"
         >
           <template #activator="{ on, attrs }">
-            <div class="-mx-3">
-              <v-list-item class="px-5 py-2">
-                <v-list-item-content>
-                  <v-list-item-title
-                    class="primary--text"
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    {{ item.name }}{{ item.gender }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ item.mobile }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-                <v-list-item-action v-if="item.primary">
-                  <v-list-item-action-text>主号码</v-list-item-action-text>
-                </v-list-item-action>
-              </v-list-item>
-              <v-divider></v-divider>
+            <div class="px-2">
+              <v-btn
+                block
+                outlined
+                x-large
+                color="primary"
+                v-bind="attrs"
+                v-on="on"
+              >
+                创建联系方式
+              </v-btn>
             </div>
           </template>
         </form-mobile-editor>
-
-        <template v-if="!mobiles.length">
-          <form-mobile-editor label="添加联系方式" @input="add">
-            <template #activator="{ on, attrs }">
-              <div class="mt-8 px-2">
-                <v-btn
-                  block
-                  outlined
-                  x-large
-                  color="primary"
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  添加联系方式
-                </v-btn>
-              </div>
-            </template>
-          </form-mobile-editor>
-        </template>
       </v-container>
     </v-main>
   </v-app>
@@ -77,24 +63,21 @@ export default {
   data() {
     return {
       mobiles: [
-        {
-          name: 'A',
-          gender: '先生',
-          mobile: '18911754060',
-          primary: true,
-        },
-        {
-          name: 'B',
-          gender: '先生',
-          mobile: '18911754050',
-          primary: false,
-        },
-        {
-          name: 'Q',
-          gender: '先生',
-          mobile: '18911754030',
-          primary: false,
-        },
+        // {
+        //   name: 'A',
+        //   gender: '先生',
+        //   mobile: '18911754060',
+        // },
+        // {
+        //   name: 'B',
+        //   gender: '先生',
+        //   mobile: '18911754050',
+        // },
+        // {
+        //   name: 'Q',
+        //   gender: '先生',
+        //   mobile: '18911754030',
+        // },
       ],
     }
   },
@@ -104,24 +87,8 @@ export default {
     },
   },
   methods: {
-    save(data, index) {
-      this.mobiles.splice(index, 1, data)
-    },
-    add(data) {
-      data.primary = !this.mobiles.length
-      this.mobiles.push(data)
-    },
-    setPrimary(index) {
-      this.mobiles.forEach((item, i) => {
-        item.primary = i === index
-      })
-    },
-    deleteHandler(index) {
-      const { primary: primaryVal } = this.mobiles[index]
-      this.mobiles.splice(index, 1)
-      if (primaryVal && this.mobiles.length) {
-        this.mobiles[0].primary = true
-      }
+    save(data) {
+      this.mobiles = data
     },
   },
 }

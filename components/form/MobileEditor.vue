@@ -1,56 +1,83 @@
 <template>
-  <v-bottom-sheet v-model="sheet" fullscreen>
+  <v-dialog
+    v-model="dialog"
+    fullscreen
+    hide-overlay
+    transition="dialog-bottom-transition"
+  >
     <template #activator="{ on, attrs }">
-      <slot name="activator" v-bind="{ on, attrs, value }"> </slot>
+      <slot name="activator" v-bind="{ on, attrs }">
+        <v-btn icon v-bind="attrs" v-on="on">
+          <v-icon>mdi-square-edit-outline</v-icon>
+        </v-btn>
+      </slot>
     </template>
     <v-sheet class="h-full">
-      <v-toolbar absolute flat tile class="w-full">
-        <v-btn icon @click="close">
-          <v-icon>mdi-window-close</v-icon>
-        </v-btn>
+      <v-toolbar flat tile class="w-full">
+        <v-btn text class="px-0 -ml-2 grey--text" @click="close">取消</v-btn>
         <v-toolbar-title>
           <div class="text-base">{{ $attrs.label }}</div>
         </v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn text class="px-0 -mr-2" :min-width="56" @click="confirm"
-          >确定</v-btn
-        >
+        <v-btn text class="px-0 -mr-2" @click="confirm">保存</v-btn>
       </v-toolbar>
-      <v-container class="h-full flex flex-col">
-        <v-form ref="form" v-model="valid" class="px-2 py-2 mt-20">
-          <v-text-field
-            v-model="cloneValue.mobile"
-            label="手机号"
-            type="number"
-            :rules="mobileRules"
-            required
-          ></v-text-field>
-          <v-text-field v-model="cloneValue.name" label="称呼">
-            <template #append>
-              <div class="pl-5" @click="toggleGender">
-                {{ cloneValue.gender }}
-              </div>
-            </template>
-          </v-text-field>
+      <v-container>
+        <v-form ref="form" v-model="valid" class="px-3">
+          <v-card elevation="0" class="mt-3">
+            <h3 class="text-sm font-medium mb-2">主号码</h3>
+            <v-text-field
+              v-model="cloneValue[0].mobile"
+              label="手机号"
+              type="number"
+              :rules="mobileRules"
+              required
+            ></v-text-field>
+            <v-text-field v-model="cloneValue[0].name" label="称呼">
+              <template #append>
+                <div class="pl-5" @click="toggleGender(0)">
+                  {{ cloneValue[0].gender }}
+                </div>
+              </template>
+            </v-text-field>
+          </v-card>
+          <v-card elevation="0" class="mt-6">
+            <h3 class="text-sm font-medium mb-2">备用号码1</h3>
+            <v-text-field
+              v-model="cloneValue[1].mobile"
+              label="手机号"
+              type="number"
+              :rules="mobileRules2"
+              required
+            ></v-text-field>
+            <v-text-field v-model="cloneValue[1].name" label="称呼">
+              <template #append>
+                <div class="pl-5" @click="toggleGender(1)">
+                  {{ cloneValue[1].gender }}
+                </div>
+              </template>
+            </v-text-field>
+          </v-card>
+          <v-card elevation="0" class="mt-6">
+            <h3 class="text-sm font-medium mb-2">备用号码2</h3>
+            <v-text-field
+              v-model="cloneValue[2].mobile"
+              label="手机号"
+              type="number"
+              :rules="mobileRules2"
+              required
+            ></v-text-field>
+            <v-text-field v-model="cloneValue[2].name" label="称呼">
+              <template #append>
+                <div class="pl-5" @click="toggleGender(2)">
+                  {{ cloneValue[2].gender }}
+                </div>
+              </template>
+            </v-text-field>
+          </v-card>
         </v-form>
-        <v-spacer></v-spacer>
-        <div>
-          <template v-if="value.primary === false">
-            <v-divider></v-divider>
-            <v-btn block text large color="primary" @click="primaryHandler"
-              >设置为主号</v-btn
-            >
-          </template>
-          <template v-if="value.mobile">
-            <v-divider></v-divider>
-            <v-btn block text large color="error" @click="deleteHandler"
-              >删除</v-btn
-            >
-          </template>
-        </div>
       </v-container>
     </v-sheet>
-  </v-bottom-sheet>
+  </v-dialog>
 </template>
 
 <script>
@@ -60,27 +87,36 @@ export default {
   inheritAttrs: false,
   props: {
     value: {
-      type: Object,
+      type: Array,
       default() {
-        return {}
+        return []
       },
     },
   },
   data: () => ({
-    sheet: false,
+    dialog: false,
     valid: true,
-    cloneValue: {},
+    cloneValue: [{}, {}, {}],
     mobileRules: [
-      (v) => !!v || '手机号不能为空',
+      (v) => !!v || '主号码不能为空',
       (v) => (v && /^1[3-9]\d{9}$/.test(v)) || '请输入正确的手机号',
+    ],
+    mobileRules2: [
+      // (v) => !!v || '手机号不能为空',
+      (v) => (v && /^1[3-9]\d{9}$/.test(v)) || !v || '请输入正确的手机号',
     ],
   }),
   watch: {
-    sheet(val) {
+    dialog(val) {
       if (val) {
         this.cloneValue = cloneDeep(this.value)
-        if (!this.cloneValue.gender) {
-          this.$set(this.cloneValue, 'gender', '先生')
+        for (let i = 0; i < 3; i++) {
+          if (!this.cloneValue[i]) {
+            this.cloneValue[i] = {}
+          }
+          if (!this.cloneValue[i].gender) {
+            this.$set(this.cloneValue[i], 'gender', '先生')
+          }
         }
         if (this.$refs.form) {
           this.$refs.form.resetValidation()
@@ -90,29 +126,18 @@ export default {
     },
   },
   methods: {
-    toggleGender() {
-      this.cloneValue.gender =
-        this.cloneValue.gender === '先生' ? '女士' : '先生'
+    toggleGender(i) {
+      this.cloneValue[i].gender =
+        this.cloneValue[i].gender === '先生' ? '女士' : '先生'
     },
     close() {
-      this.sheet = false
+      this.dialog = false
     },
     confirm() {
       if (this.$refs.form.validate()) {
-        this.$emit('input', this.cloneValue)
-        this.sheet = false
+        this.$emit('change', this.cloneValue)
+        this.dialog = false
       }
-    },
-    inputHandler(e) {
-      this.cloneValue = e
-    },
-    primaryHandler() {
-      this.$emit('setPrimary')
-      this.close()
-    },
-    deleteHandler() {
-      this.$emit('delete')
-      this.close()
     },
   },
 }
