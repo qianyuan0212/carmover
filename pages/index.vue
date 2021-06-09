@@ -16,18 +16,22 @@
       <v-container>
         <v-list>
           <template v-for="(item, index) in mobiles">
-            <v-list-item :key="item.mobile" :value="item" class="px-5 py-2">
+            <v-list-item :key="item.mobile" :value="item" class="px-5 py-5">
               <v-list-item-content>
-                <v-list-item-title class="primary--text">
-                  {{ item.name }}{{ item.gender }}
+                <v-list-item-title class="text-subtitle-2">
+                  <span v-if="index === 0">主号码</span>
+                  <span v-else>备用号码</span>
                 </v-list-item-title>
                 <v-list-item-subtitle>
-                  {{ item.mobile }}
+                  <div class="flex align-center mt-2">
+                    <span class="text-h5 primary--text">
+                      {{ formatMobile(item.mobile) }}
+                    </span>
+                    <v-spacer />
+                    <span> {{ item.name }}{{ item.gender }}</span>
+                  </div>
                 </v-list-item-subtitle>
               </v-list-item-content>
-              <v-list-item-action v-if="index === 0">
-                <v-list-item-action-text>主号码</v-list-item-action-text>
-              </v-list-item-action>
             </v-list-item>
             <v-divider :key="'divider' + index"></v-divider>
           </template>
@@ -76,6 +80,12 @@ export default {
     this.$store.dispatch('getMobile')
   },
   methods: {
+    formatMobile(mobile) {
+      const arrMobile = Array.from(mobile)
+      arrMobile.splice(7, 0, ' ')
+      arrMobile.splice(3, 0, ' ')
+      return arrMobile.join('')
+    },
     save(mobiles) {
       this.$store.dispatch('saveMobile', mobiles)
     },

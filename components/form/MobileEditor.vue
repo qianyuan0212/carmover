@@ -24,7 +24,7 @@
       <v-container>
         <v-form ref="form" v-model="valid" class="px-3">
           <v-card elevation="0" class="mt-3">
-            <h3 class="text-sm font-medium mb-2">主号码</h3>
+            <h3 class="text-sm font-medium mb-3 black--text">主号码</h3>
             <v-text-field
               v-model="cloneValue[0].mobile"
               label="手机号"
@@ -40,8 +40,8 @@
               </template>
             </v-text-field>
           </v-card>
-          <v-card elevation="0" class="mt-6">
-            <h3 class="text-sm font-medium mb-2">备用号码</h3>
+          <v-card elevation="0" class="mt-12">
+            <h3 class="text-sm font-medium mb-3 black--text">备用号码</h3>
             <v-text-field
               v-model="cloneValue[1].mobile"
               label="手机号"
