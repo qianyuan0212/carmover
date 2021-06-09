@@ -33,4 +33,7 @@ export const actions = {
     }
     return response
   },
+  getMobileById(_, userid) {
+    return this.$axios.post('/api/index.php?action=get_mobile', { userid })
+  },
 }
