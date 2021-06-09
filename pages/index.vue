@@ -14,9 +14,9 @@
     </v-app-bar>
     <v-main>
       <v-container>
-        <v-list>
+        <v-list class="px-2">
           <template v-for="(item, index) in mobiles">
-            <v-list-item :key="item.mobile" :value="item" class="px-5 py-5">
+            <v-list-item :key="item.mobile" :value="item" class="px-0 py-5">
               <v-list-item-content>
                 <v-list-item-title class="text-subtitle-2">
                   <span v-if="index === 0">主号码</span>
