@@ -41,7 +41,7 @@
             </v-text-field>
           </v-card>
           <v-card elevation="0" class="mt-6">
-            <h3 class="text-sm font-medium mb-2">备用号码1</h3>
+            <h3 class="text-sm font-medium mb-2">备用号码</h3>
             <v-text-field
               v-model="cloneValue[1].mobile"
               label="手机号"
@@ -57,7 +57,7 @@
               </template>
             </v-text-field>
           </v-card>
-          <v-card elevation="0" class="mt-6">
+          <!-- <v-card elevation="0" class="mt-6">
             <h3 class="text-sm font-medium mb-2">备用号码2</h3>
             <v-text-field
               v-model="cloneValue[2].mobile"
@@ -73,7 +73,7 @@
                 </div>
               </template>
             </v-text-field>
-          </v-card>
+          </v-card> -->
         </v-form>
       </v-container>
     </v-sheet>
@@ -96,7 +96,7 @@ export default {
   data: () => ({
     dialog: false,
     valid: true,
-    cloneValue: [{}, {}, {}],
+    cloneValue: [{}, {}],
     mobileRules: [
       (v) => !!v || '主号码不能为空',
       (v) => (v && /^1[3-9]\d{9}$/.test(v)) || '请输入正确的手机号',
@@ -110,7 +110,7 @@ export default {
     dialog(val) {
       if (val) {
         this.cloneValue = cloneDeep(this.value)
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 2; i++) {
           if (!this.cloneValue[i]) {
             this.cloneValue[i] = {}
           }
@@ -135,7 +135,10 @@ export default {
     },
     confirm() {
       if (this.$refs.form.validate()) {
-        this.$emit('change', this.cloneValue)
+        this.$emit(
+          'change',
+          this.cloneValue.filter((item) => item.mobile)
+        )
         this.dialog = false
       }
     },

@@ -59,36 +59,25 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   data() {
-    return {
-      mobiles: [
-        // {
-        //   name: 'A',
-        //   gender: '先生',
-        //   mobile: '18911754060',
-        // },
-        // {
-        //   name: 'B',
-        //   gender: '先生',
-        //   mobile: '18911754050',
-        // },
-        // {
-        //   name: 'Q',
-        //   gender: '先生',
-        //   mobile: '18911754030',
-        // },
-      ],
-    }
+    return {}
+  },
+  computed: {
+    ...mapState(['mobiles']),
   },
   watch: {
     page(val) {
       // console.log({ val })
     },
   },
+  created() {
+    this.$store.dispatch('getMobile')
+  },
   methods: {
-    save(data) {
-      this.mobiles = data
+    save(mobiles) {
+      this.$store.dispatch('saveMobile', mobiles)
     },
   },
 }
